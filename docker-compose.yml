@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  sandbox:
+    build: ./sandbox
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./workspace:/workspace
+
+  agent:
+    build:
+      context: ./agent
+      dockerfile: -
+    image: python:3.11-slim
+    volumes:
+      - ./agent:/app
+      - ./workspace:/workspace
+    working_dir: /app
+    command: python main.py
+    env_file:
+      - .env
+    environment:
+      - SANDBOX_URL=http://sandbox:8000
+    depends_on:
+      - sandbox
